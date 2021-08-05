@@ -4,7 +4,7 @@
 
 | 注解 | 描述 |
 | --- | --- |
-| AutoRowMapper | 标识为需要被编译时织入代码(列映射注解和Insert方法的植入) `value`属性值为true时 未忽略和未映射的字段会默认按照驼峰转下划线做映射 |
+| AutoRowMapper | 标识为需要被编译时织入代码(列映射注解和Insert方法的织入) `value`属性值为true时 未忽略和未映射的字段会默认按照驼峰转下划线做映射 |
 | EnableGarishSQL | SpringBoot注入默认对象 |
 | Entity | 映射表字段名称 |
 | Cell | 映射表字段名称 |
@@ -39,8 +39,7 @@ public class IndexServiceImpl implements IndexService{
     @Autowired
     private IndexDao indexDao;
     
-    public boolean insert(){
-        Data data = new Data();
+    public boolean insert(Data data){
         return 1 == indexDao.insert(data);
     }
     public boolean update(Long id,String newName){
