@@ -3,11 +3,11 @@ package org.dregs.garish.sql.action;
 import org.dregs.garish.sql.Factor;
 import org.dregs.garish.sql.Quote;
 import org.dregs.garish.sql.annotation.Entity;
-import org.dregs.garish.sql.dao.trait.IndexDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Delete<T> extends Action
@@ -244,6 +244,20 @@ public class Delete<T> extends Action
     {
         if (hasToTerm && 0 == sqlList.size())
             throw new RuntimeException("filter conditions must exist or open not limit mode");
+    }
+
+    public <R> R exec(Function<Delete<T>, R> function)
+    {
+        return function.apply(this);
+    }
+
+    public void exec(Consumer<Delete<T>> consumer)
+    {
+        consumer.accept(this);
+    }
+
+    public int delete(Function<Delete<T>, Integer> function){
+        return function.apply(this);
     }
 
 

@@ -89,13 +89,6 @@ public class IndexDaoImpl implements IndexDao {
     }
 
     @Override
-    public <T> int insert(Insert<T> insert, T t) {
-        Tuple2<String, Object[]> tuple2 = insert.builder(t);
-        return jdbcTemplate.update(tuple2._1(),tuple2._2());
-    }
-
-
-    @Override
     public int insert(Object o) {
         try{
             if(null == o)

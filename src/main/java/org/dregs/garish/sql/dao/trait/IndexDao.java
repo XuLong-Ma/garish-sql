@@ -22,8 +22,6 @@ public interface IndexDao {
 
     int count(Query query);
 
-    <T> int insert(Insert<T> insert, T t);
-
     int insert(Object o);
 
     int delete(Delete delete);

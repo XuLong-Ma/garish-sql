@@ -8,20 +8,32 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.tree.TreeTranslator;
-import com.sun.tools.javac.util.*;
-import org.dregs.garish.sql.annotation.*;
+import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.List;
+import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Names;
+import org.dregs.garish.sql.annotation.AutoRowMapper;
+import org.dregs.garish.sql.annotation.Cell;
+import org.dregs.garish.sql.annotation.EasyInsert;
+import org.dregs.garish.sql.annotation.Entity;
+import org.dregs.garish.sql.annotation.GeneratedValue;
+import org.dregs.garish.sql.annotation.Ignore;
+import org.dregs.garish.sql.data.Tuple;
 import org.dregs.garish.sql.data.Tuple2;
 import org.dregs.garish.sql.utils.ASTUtil;
 
-import javax.annotation.processing.*;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.util.ArrayList;
 import java.util.Set;
-
-import static org.dregs.garish.sql.data.BuildMap.asNode;
 
 
 @SupportedAnnotationTypes("org.dregs.garish.sql.annotation.AutoRowMapper")
@@ -111,7 +123,7 @@ public class RowMapperProcessor extends AbstractProcessor {
                                 );
                             }
                             cellList.add(String.format("`%s`",value));
-                            if(isInsert) cellNameAndVarList.add(asNode(value,aThis));
+                            if(isInsert) cellNameAndVarList.add(Tuple.initialize(value,aThis));
                         }
                         }
                     }

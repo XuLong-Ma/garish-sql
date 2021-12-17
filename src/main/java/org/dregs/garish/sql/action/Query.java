@@ -5,12 +5,12 @@ import org.dregs.garish.sql.Factor;
 import org.dregs.garish.sql.MapperHub;
 import org.dregs.garish.sql.Quote;
 import org.dregs.garish.sql.annotation.Entity;
-import org.dregs.garish.sql.dao.trait.IndexDao;
 import org.dregs.garish.sql.utils.Util;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Query<T> extends Action
@@ -318,14 +318,29 @@ public class Query<T> extends Action
             throw new RuntimeException("filter conditions must exist or open not limit mode");
     }
 
-    public List<T> findList(IndexDao indexDao)
+    public List<T> findList(Function<Query<T>, List<T>> function)
     {
-        return indexDao.findList(this);
+        return function.apply(this);
     }
 
-    public T findOne(IndexDao indexDao)
+    public T findOne(Function<Query<T>, T> function)
     {
-        return indexDao.findOne(this);
+        return function.apply(this);
+    }
+
+    public int count(Function<Query<T>, Integer> function)
+    {
+        return function.apply(this);
+    }
+
+    public <R> R exec(Function<Query<T>, R> function)
+    {
+        return function.apply(this);
+    }
+
+    public void exec(Consumer<Query<T>> consumer)
+    {
+        consumer.accept(this);
     }
 
 

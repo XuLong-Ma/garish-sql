@@ -13,28 +13,22 @@ import java.util.stream.Collectors;
 public class MapperHub {
 
 
-    private final static Map<String,String> classMapperTable = new HashMap<>();
+    private final static Map<String,String> CLASS_MAPPER_TABLE = new HashMap<>();
 
-    private final static Map<String,Map<String,String>> colToField = new HashMap<>();
+    private final static Map<String,Map<String,String>> COL_TO_FIELD = new HashMap<>();
 
-    private final static Map<String,Map<String,String>> fieldToCol = new HashMap<>();
+    private final static Map<String,Map<String,String>> FIELD_TO_COL = new HashMap<>();
 
-    private final static Map<String,Map<String, Method>> methodCache = new HashMap<>();
+    private final static Map<String,Map<String, Method>> METHOD_CACHE = new HashMap<>();
 
-    private final static Map<String,String> cellsCache = new HashMap<>();
-
-
-
-
-
-
+    private final static Map<String,String> CELLS_CACHE = new HashMap<>();
 
 
 
 
     public static Map<String,String> queryMapper(){
         Map<String, String> map = new HashMap<>();
-        for(Map.Entry<String,String> entry : classMapperTable.entrySet())
+        for(Map.Entry<String,String> entry : CLASS_MAPPER_TABLE.entrySet())
             map.put(entry.getKey(),entry.getValue());
         return map;
     }
@@ -43,28 +37,28 @@ public class MapperHub {
 
     public static String getField(Class tClass,String col){
         String tableName = getTableName(tClass);
-        Map<String, String> map = colToField.get(tableName);
+        Map<String, String> map = COL_TO_FIELD.get(tableName);
         if(null == map)return null;
         return map.get(col);
     }
     public static String getCell(Class tClass,String field){
         String tableName = getTableName(tClass);
-        Map<String, String> map = fieldToCol.get(tableName);
+        Map<String, String> map = FIELD_TO_COL.get(tableName);
         if(null == map)return null;
         return map.get(field);
     }
     public static Method getMethod(Class tClass,String name){
         String tableName = getTableName(tClass);
-        Map<String, Method> map = methodCache.get(tableName);
+        Map<String, Method> map = METHOD_CACHE.get(tableName);
         if(null == map)return null;
         return map.get(name);
     }
 
     public static String cells(Class tClass){
         String tableName = getTableName(tClass);
-        String result = cellsCache.get(tableName);
+        String result = CELLS_CACHE.get(tableName);
         if(null != result) return result;
-        Map<String, String> map = colToField.get(tableName);
+        Map<String, String> map = COL_TO_FIELD.get(tableName);
         List<String> cols = map.keySet().stream().map(s -> (String.format("`%s`", s))).collect(Collectors.toList());
         result = String.join(",", cols);
         return result;
@@ -116,10 +110,10 @@ public class MapperHub {
         for(Method method : tClass.getDeclaredMethods()){
             methodDict.put(method.getName(),method);
         }
-        classMapperTable.put(tClass.getSimpleName(),tableName);
-        methodCache.put(tableName,methodDict);
-        colToField.put(tableName,colKey);
-        fieldToCol.put(tableName,fieldKey);
+        CLASS_MAPPER_TABLE.put(tClass.getSimpleName(),tableName);
+        METHOD_CACHE.put(tableName,methodDict);
+        COL_TO_FIELD.put(tableName,colKey);
+        FIELD_TO_COL.put(tableName,fieldKey);
     }
 
 }

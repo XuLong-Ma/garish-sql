@@ -3,15 +3,14 @@ package org.dregs.garish.sql.action;
 
 import org.dregs.garish.sql.Quote;
 import org.dregs.garish.sql.annotation.Entity;
-import org.dregs.garish.sql.dao.trait.IndexDao;
+import org.dregs.garish.sql.data.Tuple;
 import org.dregs.garish.sql.data.Tuple2;
 import org.dregs.garish.sql.data.Tuple3;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.dregs.garish.sql.data.BuildMap.asNode;
-import static org.dregs.garish.sql.data.Tuple.asTuple;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 public class Update<T> extends Action
@@ -101,7 +100,7 @@ public class Update<T> extends Action
             throw new RuntimeException("key not exist");
         if (null == value)
             throw new RuntimeException(String.format("[%s] cannot be null", key));
-        setKVs.add(asNode(key, value));
+        setKVs.add(Tuple.initialize(key, value));
         return this;
     }
 
@@ -111,7 +110,7 @@ public class Update<T> extends Action
             throw new RuntimeException("key not exist");
         if (null == value)
             throw new RuntimeException(String.format("[%s] cannot be null", key));
-        whereKVs.add(asNode(key, value));
+        whereKVs.add(Tuple.initialize(key, value));
         return this;
     }
 
@@ -141,13 +140,13 @@ public class Update<T> extends Action
 
     public Update<T> setCell(String key, Object value)
     {
-        if (null != key && null != value) setKVs.add(asNode(key, value));
+        if (null != key && null != value) setKVs.add(Tuple.initialize(key, value));
         return this;
     }
 
     public Update<T> eqCell(String key, Object value)
     {
-        if (null != key && null != value) whereKVs.add(asNode(key, value));
+        if (null != key && null != value) whereKVs.add(Tuple.initialize(key, value));
         return this;
     }
 
@@ -172,7 +171,7 @@ public class Update<T> extends Action
             whereBuilder.append("`").append(t._1()).append("` = ?");
             objects.add(t._2());
         }
-        return asTuple(
+        return Tuple.initialize(
                 String.format(UPDATE_TEMPLATE, tableName, setBuilder.toString(), whereBuilder.toString()),
                 objects.toArray()
         );
@@ -181,21 +180,31 @@ public class Update<T> extends Action
     public Tuple3<String, Object[], Decide> fusionSOD()
     {
         Tuple2<String, Object[]> tuple2 = fusionSO();
-        return asTuple(
+        return Tuple.initialize(
                 tuple2._1(),
                 tuple2._2(),
                 decide
         );
     }
 
-    public int affect(IndexDao indexDao)
+    public int update(Function<Update<T>, Integer> function)
     {
-        return indexDao.update(this);
+        return function.apply(this);
     }
 
-    public boolean affectResult(IndexDao indexDao)
+    public boolean updateResult(Function<Update<T>, Integer> function)
     {
-        return this.decide.use(affect(indexDao));
+        return this.decide.use(update(function));
+    }
+
+    public <R> R exec(Function<Update<T>, R> function)
+    {
+        return function.apply(this);
+    }
+
+    public void exec(Consumer<Update<T>> consumer)
+    {
+        consumer.accept(this);
     }
 
     @FunctionalInterface
